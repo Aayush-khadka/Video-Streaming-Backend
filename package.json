@@ -1,0 +1,16 @@
+{
+  "name": "youtube-backend",
+  "version": "1.0.0",
+  "description": "Youtube Bancked Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "start"
+  },
+  "author": "Aayush-Khadka",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2",
+    "mongoose": "^8.9.2",
+    "nodemon": "^3.1.9"
+  }
+}
