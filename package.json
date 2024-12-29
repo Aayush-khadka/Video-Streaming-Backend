@@ -2,15 +2,19 @@
   "name": "youtube-backend",
   "version": "1.0.0",
   "description": "Youtube Bancked Project",
-  "main": "app.js",
+  "type": "module",
+  "main": "index.js",
   "scripts": {
-    "test": "start"
+    "test": "start",
+    "start": "npx nodemon src/index.js"
   },
   "author": "Aayush-Khadka",
   "license": "ISC",
   "dependencies": {
     "express": "^4.21.2",
-    "mongoose": "^8.9.2",
+    "mongoose": "^8.9.2"
+  },
+  "devDependencies": {
     "nodemon": "^3.1.9"
   }
 }
