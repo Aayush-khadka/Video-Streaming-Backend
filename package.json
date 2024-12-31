@@ -6,12 +6,14 @@
   "main": "index.js",
   "scripts": {
     "test": "start",
-    "start": "npx nodemon src/index.js"
+    "start": "npx nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "author": "Aayush-Khadka",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "mongodb": "^6.12.0",
     "mongoose": "^8.9.2"
   },
   "devDependencies": {
