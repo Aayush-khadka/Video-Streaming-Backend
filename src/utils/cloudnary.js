@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import { response } from "express";
 import fs from "fs";
 
 cloudinary.config({
@@ -10,14 +9,18 @@ cloudinary.config({
 
 const uploadOnCloudinary = async (localfilepath) => {
   try {
-    if (!local) return null;
-    cloudinary.uploader(localfilepath, { resource_type: "auto" });
-    console.log("FILE UPLOADED SUCESSFULYY", response.url);
-    return response;
-  } catch (error) {
+    if (!localfilepath) return null;
+    const result = await cloudinary.uploader.upload(localfilepath, {
+      resource_type: "auto",
+    });
+
     fs.unlinkSync(localfilepath);
-    return null;
+    return result;
+  } catch (error) {
+    console.error("ERROR UPLOADING FILE TO CLOUDINARY", error);
+    fs.unlinkSync(localfilepath);
+    throw new Error("Failed to upload file to Cloudinary");
   }
 };
 
-export { cloudinary };
+export { uploadOnCloudinary };
