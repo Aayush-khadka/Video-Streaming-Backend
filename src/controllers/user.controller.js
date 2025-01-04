@@ -178,8 +178,8 @@ const refreshAccessToken = asynchandler(async (req, res) => {
 
     return res
       .status(200)
-      .cookie("refreshToken", newrefreshToken)
-      .cookie("accessToken", accessToken)
+      .cookie("refreshToken", newrefreshToken, options)
+      .cookie("accessToken", accessToken, options)
       .json(
         new ApiResponse(
           200,
