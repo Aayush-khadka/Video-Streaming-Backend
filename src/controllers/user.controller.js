@@ -8,8 +8,8 @@ import path from "path";
 const generateAccessAndRefreshTokens = async (UserID) => {
   try {
     const user = await User.findById(UserID);
-    const accessToken = User.generateAccessToken();
-    const refreshToken = User.generateRefreshToken();
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -18,7 +18,7 @@ const generateAccessAndRefreshTokens = async (UserID) => {
   } catch (error) {
     throw new ApiError(
       500,
-      "Something went wrong while try to generate refresh tokens"
+      "Something went wrong while generating refresh tokens"
     );
   }
 };
