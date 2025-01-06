@@ -30,7 +30,7 @@ const videoSchema = new mongoose.Schema(
     duration: {
       type: Number,
       required: true, // Duration in seconds
-      default: 10,
+      default: 0,
     },
     views: {
       type: Number,

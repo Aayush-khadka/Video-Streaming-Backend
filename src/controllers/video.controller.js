@@ -34,6 +34,7 @@ const uploadVideo = asynchandler(async (req, res) => {
     thumbnail: thumbnail.url,
     title,
     description,
+    duration: video.duration,
   });
 
   if (!videoUpload) {
