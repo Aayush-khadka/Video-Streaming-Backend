@@ -15,10 +15,12 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 
 //routes Import
-import router from "./routes/user.routes.js";
+import user from "./routes/user.routes.js";
+import video from "./routes/videos.routes.js";
 
 //routes decleration
-app.use("/api/v1/users", router);
+app.use("/api/v1/users", user);
+app.use("/api/v1/videos", video);
 
 export default app;
 // module.exports = app;
