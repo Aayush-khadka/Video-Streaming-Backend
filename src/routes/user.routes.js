@@ -36,12 +36,12 @@ router.route("/refresh-token").post(refreshAccessToken);
 
 router.route("/change-password").post(verifyJWT, changeCurrentPassword);
 router.route("/current-user").get(verifyJWT, getCurrentUser);
-router.route("/change-user-details").patch(verifyJWT, updateAccountDetails);
+router.route("/change-user-detail").patch(verifyJWT, updateAccountDetails);
 router
-  .route("/avatar")
+  .route("/update-avatar")
   .patch(verifyJWT, upload.single("avatar"), updateAvatarImage);
 router
-  .route("/cover-image")
+  .route("/update-cover-image")
   .patch(verifyJWT, upload.single("coverImage"), updateCoverImage);
 router.route("/c/:username").get(verifyJWT, getUserChannelProfile);
 router.route("/history").get(verifyJWT, getUserWatchHistory);

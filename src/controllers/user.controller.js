@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 import path from "path";
 import jwt from "jsonwebtoken";
 
@@ -200,7 +201,7 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
 
   const user = await User.findById(req.user?._id);
 
-  const isPasswordCorrect = await user.isPasswordCorrect(oldpassword);
+  const isPasswordCorrect = await user.ispasswordCorrect(oldpassword);
 
   if (!isPasswordCorrect) {
     throw new ApiError(500, "THE password is incorrect");
@@ -242,9 +243,8 @@ const updateAccountDetails = asynchandler(async (req, res) => {
     .json(new ApiResponse(200, user, "User Details Updated"));
 });
 
-const updateAvatarImage = asynchandler(async (eq, res) => {
+const updateAvatarImage = asynchandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
-
   if (!avatarLocalPath) {
     throw new ApiError(500, "There is no Avatar");
   }
@@ -266,7 +266,7 @@ const updateAvatarImage = asynchandler(async (eq, res) => {
     .json(new ApiResponse(200, user, "User Avatar Updated"));
 });
 
-const updateCoverImage = asynchandler(async (eq, res) => {
+const updateCoverImage = asynchandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
 
   if (!coverImageLocalPath) {
@@ -305,7 +305,7 @@ const getUserChannelProfile = asynchandler(async (req, res) => {
     {
       $lookup: {
         from: "subscriptions",
-        localfield: "_id",
+        localField: "_id",
         foreignField: "channel",
         as: "subscribers",
       },
@@ -328,7 +328,7 @@ const getUserChannelProfile = asynchandler(async (req, res) => {
         },
         isSubscribed: {
           $cond: {
-            if: { in: [req.user?._id, "$subscribers.subscriber"] },
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
             then: true,
             else: false,
           },
@@ -349,7 +349,7 @@ const getUserChannelProfile = asynchandler(async (req, res) => {
     },
   ]);
 
-  if (!channel?.length()) {
+  if (!channel?.length) {
     throw new ApiError(400, "channel doesnot Exixts");
   }
 
