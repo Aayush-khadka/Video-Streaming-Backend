@@ -29,12 +29,16 @@ const uploadVideo = asynchandler(async (req, res) => {
     );
   }
 
+  const user = req.user._id;
+  console.log(user);
+
   const videoUpload = await Video.create({
     videoFile: video.url,
     thumbnail: thumbnail.url,
     title,
     description,
     duration: video.duration,
+    owner: user,
   });
 
   if (!videoUpload) {
