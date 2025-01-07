@@ -51,4 +51,25 @@ const uploadVideo = asynchandler(async (req, res) => {
     .json(new ApiResponse(200, uploadedVideo, "Video Sucessfully Uploaded!!!"));
 });
 
-export { uploadVideo };
+const deleteVideo = asynchandler(async (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    throw new ApiError(400, "Video ID Needed!!!");
+  }
+  const videoExists = await Video.findById(id);
+
+  if (!videoExists) {
+    throw new ApiError(400, "The Video Does not Exists!!!");
+  }
+
+  const videoDelete = await Video.deleteOne({ _id: id });
+
+  if (!videoDelete) {
+    throw new ApiError(500, "Deleting the Video Failed!!!");
+  }
+  return res
+    .status(200)
+    .json(new ApiResponse(200, { videoExists }, "Video Deleted"));
+});
+
+export { uploadVideo, deleteVideo };
