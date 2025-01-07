@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { Video } from "../models/video.model.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import mongoose from "mongoose";
+import { User } from "../models/user.model.js";
 
 const uploadVideo = asynchandler(async (req, res) => {
   const { title, description } = req.body;
@@ -30,7 +31,6 @@ const uploadVideo = asynchandler(async (req, res) => {
   }
 
   const user = req.user._id;
-  console.log(user);
 
   const videoUpload = await Video.create({
     videoFile: video.url,
@@ -69,7 +69,71 @@ const deleteVideo = asynchandler(async (req, res) => {
   }
   return res
     .status(200)
-    .json(new ApiResponse(200, { videoExists }, "Video Deleted"));
+    .json(new ApiResponse(200, videoExists, "Video Deleted"));
 });
 
-export { uploadVideo, deleteVideo };
+const updateVideoTitle = asynchandler(async (req, res) => {
+  const { title } = req.body;
+  const id = req.params.id;
+  const user = req.user.id;
+  const checkOwner = await Video.findOne({ owner: user });
+  if (!checkOwner) {
+    throw new ApiError(400, "Unauthorized Access");
+  }
+
+  if (!title) {
+    throw new ApiError(400, "Provide The updated Title!!!");
+  }
+  if (!id) {
+    throw new ApiError(
+      400,
+      "Provide The Id for which the video title to be updated!!!"
+    );
+  }
+
+  const videoExits = await Video.findById(id);
+
+  if (!videoExits) {
+    throw new ApiError(400, "The video does not Exixts !!!");
+  }
+
+  await Video.updateOne({ $set: { title } });
+  return res
+    .status(200)
+    .json(new ApiResponse(200, title, "Changed the Video Title!!!"));
+});
+
+const updateVideoDescription = asynchandler(async (req, res) => {
+  const { description } = req.body;
+  const id = req.params.id;
+  const user = req.user.id;
+  const checkOwner = await Video.findOne({ owner: user });
+  if (!checkOwner) {
+    throw new ApiError(400, "Unauthorized Access");
+  }
+
+  if (!description) {
+    throw new ApiError(400, "Provide The updated Description!!!");
+  }
+  if (!id) {
+    throw new ApiError(
+      400,
+      "Provide The Id for which the video description to be updated!!!"
+    );
+  }
+
+  const videoExits = await Video.findById(id);
+
+  if (!videoExits) {
+    throw new ApiError(400, "The video does not Exixts !!!");
+  }
+
+  await Video.updateOne({ $set: { description } });
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, description, "Changed the Video Description!!!")
+    );
+});
+
+export { uploadVideo, deleteVideo, updateVideoTitle, updateVideoDescription };

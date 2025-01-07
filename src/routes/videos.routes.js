@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { uploadVideo, deleteVideo } from "../controllers/video.controller.js";
+import {
+  uploadVideo,
+  deleteVideo,
+  updateVideoTitle,
+  updateVideoDescription,
+} from "../controllers/video.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middelware.js";
 
@@ -22,5 +27,9 @@ router.route("/upload").post(
 // router.route("/toggle/publish/:id");
 
 router.route("/delete/:id").delete(verifyJWT, deleteVideo);
+router.route("/update-title/:id").patch(verifyJWT, updateVideoTitle);
+router
+  .route("/update-description/:id")
+  .patch(verifyJWT, updateVideoDescription);
 
 export default router;

@@ -78,7 +78,7 @@ const registerUser = asynchandler(async (req, res, next) => {
 
 const loginUser = asynchandler(async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(email, password);
+  // console.log(email, password);
 
   if (!email || !password) {
     throw new ApiError(400, "Username and password both are Required");
@@ -90,7 +90,7 @@ const loginUser = asynchandler(async (req, res, next) => {
   const isPasswordValid = await user.ispasswordCorrect(password);
   if (!isPasswordValid) throw new ApiError(400, "Password is Invalid");
 
-  console.log(user._id);
+  // console.log(user._id);
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
     user._id
