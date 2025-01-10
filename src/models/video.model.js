@@ -38,7 +38,7 @@ const videoSchema = new mongoose.Schema(
     },
     isPublished: {
       type: Boolean,
-      default: false, // Default to unpublished
+      default: true, // Default to unpublished
     },
     // createdAt: {
     //   type: Date,

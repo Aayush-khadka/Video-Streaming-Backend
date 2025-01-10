@@ -5,6 +5,7 @@ import { Video } from "../models/video.model.js";
 import { uploadOnCloudinary } from "../utils/cloudnary.js";
 import mongoose from "mongoose";
 import { User } from "../models/user.model.js";
+import { Subscription } from "../models/subscription.model.js";
 
 const uploadVideo = asynchandler(async (req, res) => {
   const { title, description } = req.body;
@@ -136,4 +137,50 @@ const updateVideoDescription = asynchandler(async (req, res) => {
     );
 });
 
-export { uploadVideo, deleteVideo, updateVideoTitle, updateVideoDescription };
+const togglePublishStatus = asynchandler(async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    throw new ApiError(400, "User id Required!!!");
+  }
+  const user = req.user.id;
+  const checkOwner = await Video.findOne({ owner: user });
+  if (!checkOwner) {
+    throw new ApiError(400, "Unauthorized Access");
+  }
+
+  const video = await Video.findById(id);
+  const togglestatus = await Video.findOneAndUpdate(
+    { _id: id },
+    { $set: { isPublished: !video.isPublished } }
+  );
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Toggled Publish Status"));
+});
+
+const getvideo = asynchandler(async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    throw new ApiError(400, "User id Required!!!");
+  }
+
+  const video = await Video.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {},
+  ]);
+
+  return res.status(200).json(new ApiResponse(200, video[0], "Uploaded Video"));
+});
+export {
+  uploadVideo,
+  deleteVideo,
+  updateVideoTitle,
+  updateVideoDescription,
+  togglePublishStatus,
+  getvideo,
+};
