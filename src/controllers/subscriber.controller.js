@@ -84,4 +84,42 @@ const getAllSubscribers = asynchandler(async (req, res) => {
     .json(new ApiResponse(200, subscribers, "ALL Subscribers Fetched"));
 });
 
-export { subscribeTochannel, getAllSubscribers };
+const getChannelSubscribedTo = asynchandler(async (req, res) => {
+  const user = req.params.id;
+
+  const isUserValid = await User.findById(user);
+  if (!isUserValid) {
+    throw new ApiError(400, "Invalid User ID!!!");
+  }
+
+  const subscribers = await Subscription.aggregate([
+    {
+      $match: {
+        subscriber: new mongoose.Types.ObjectId(user),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "channel",
+        foreignField: "_id",
+        as: "channelDetail",
+      },
+    },
+    {
+      $project: {
+        "channelDetail.username": 1,
+        channel: 1,
+        "channelDetail.avatar": 1,
+      },
+    },
+  ]);
+  if (!subscribers || !subscribers.length) {
+    throw new ApiError(500, "User is Subscribed to Noone");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, subscribers, "ALL Channel Fetched"));
+});
+export { subscribeTochannel, getAllSubscribers, getChannelSubscribedTo };
