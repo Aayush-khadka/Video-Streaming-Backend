@@ -171,10 +171,68 @@ const getvideo = asynchandler(async (req, res) => {
         _id: new mongoose.Types.ObjectId(id),
       },
     },
-    {},
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "userDetails",
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "owner",
+        foreignField: "subscriber",
+        as: "subscribers",
+      },
+    },
+
+    {
+      $addFields: {
+        subscriberCount: {
+          $size: "$subscribers",
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user?._id, "$subscribers.subscriber"] },
+            then: true,
+            else: false,
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        title: 1,
+        description: 1,
+        videoFile: 1,
+        thumbnail: 1,
+        views: 1,
+        createdAt: 1,
+        owner: 1,
+        "userDetails.username": 1,
+        "userDetails.avatar": 1,
+        subscriberCount: 1,
+        isSubscribed: 1,
+      },
+    },
   ]);
 
-  return res.status(200).json(new ApiResponse(200, video[0], "Uploaded Video"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video[0], "HERE IS THE VIDEO"));
+});
+
+const getAllVideos = asynchandler(async (req, res) => {
+  try {
+    const allVideo = await Video.find();
+    return res
+      .status(200)
+      .json(new ApiResponse(200, allVideo, "All video Fetched"));
+  } catch (error) {
+    throw new ApiError(500, "Fetching All Videos Failed");
+  }
 });
 export {
   uploadVideo,
@@ -183,4 +241,5 @@ export {
   updateVideoDescription,
   togglePublishStatus,
   getvideo,
+  getAllVideos,
 };
