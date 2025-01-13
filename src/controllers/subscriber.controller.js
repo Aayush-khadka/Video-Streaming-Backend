@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Subscription } from "../models/subscription.model.js";
 import { User } from "../models/user.model.js";
+import mongoose from "mongoose";
 
 const subscribeTochannel = asynchandler(async (req, res) => {
   const channelId = req.params.id;
@@ -44,4 +45,43 @@ const subscribeTochannel = asynchandler(async (req, res) => {
   }
 });
 
-export { subscribeTochannel };
+const getAllSubscribers = asynchandler(async (req, res) => {
+  const channelId = req.params.id;
+
+  const isChannelValid = await User.findById(channelId);
+  if (!isChannelValid) {
+    throw new ApiError(400, "Invalid channel ID!!!");
+  }
+
+  const subscribers = await Subscription.aggregate([
+    {
+      $match: {
+        channel: new mongoose.Types.ObjectId(channelId),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "subscriber",
+        foreignField: "_id",
+        as: "subscriberDetail",
+      },
+    },
+    {
+      $project: {
+        "subscriberDetail.username": 1,
+        subscriber: 1,
+        "subscriberDetail.avatar": 1,
+      },
+    },
+  ]);
+  if (!subscribers || !subscribers.length) {
+    throw new ApiError(500, "Cannot Find this channel's Subscribers ");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, subscribers, "ALL Subscribers Fetched"));
+});
+
+export { subscribeTochannel, getAllSubscribers };
