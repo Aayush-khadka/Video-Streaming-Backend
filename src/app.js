@@ -17,10 +17,12 @@ app.use(express.static("public"));
 //routes Import
 import user from "./routes/user.routes.js";
 import video from "./routes/videos.routes.js";
+import subscribe from "./routes/subscribe.routes.js";
 
 //routes decleration
 app.use("/api/v1/users", user);
 app.use("/api/v1/videos", video);
+app.use("/api/v1/subscribe", subscribe);
 
 export default app;
 // module.exports = app;
