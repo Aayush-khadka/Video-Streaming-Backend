@@ -187,6 +187,21 @@ const getvideo = asynchandler(async (req, res) => {
         as: "subscribers",
       },
     },
+    {
+      $lookup: {
+        from: "likes",
+        localField: "_id",
+        foreignField: "video",
+        as: "likes",
+      },
+    },
+    {
+      $addFields: {
+        likes: {
+          $size: "$likes",
+        },
+      },
+    },
 
     {
       $addFields: {
@@ -215,6 +230,7 @@ const getvideo = asynchandler(async (req, res) => {
         "userDetails.avatar": 1,
         subscriberCount: 1,
         isSubscribed: 1,
+        likes: 1,
       },
     },
   ]);
