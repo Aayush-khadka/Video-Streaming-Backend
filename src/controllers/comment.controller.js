@@ -133,4 +133,38 @@ const getCommentOnVideo = asynchandler(async (req, res) => {
       )
     );
 });
-export { commentOnVideo, editCommentOnVideo, getCommentOnVideo };
+
+const deleteCommentOnVideo = asynchandler(async (req, res) => {
+  const commentID = req.params.id;
+  const currentUser = req.user._id;
+  const videoId = req.params.vid;
+  const comment = await Comment.findById(commentID);
+
+  if (!comment) {
+    throw new ApiError(400, "Unable to find the comment");
+  }
+
+  if (currentUser.toString() !== comment.commentedBy.toString()) {
+    throw new ApiError(400, "Invalid User!!!");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (video.owner.toString() !== comment.commentedBy.toString()) {
+    throw new ApiError(400, "Inavlid  OWner User!!!");
+  }
+
+  const deleteComment = await Comment.findByIdAndDelete(commentID);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, deleteComment, "Sucessfully Delted The Comment!!!")
+    );
+});
+export {
+  commentOnVideo,
+  editCommentOnVideo,
+  getCommentOnVideo,
+  deleteCommentOnVideo,
+};
