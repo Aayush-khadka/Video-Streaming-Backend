@@ -80,23 +80,33 @@ const getCommentOnVideo = asynchandler(async (req, res) => {
   const findComments = await Comment.aggregate([
     {
       $match: {
-        video: mongoose.isObjectIdOrHexString(req.params.id),
+        video: new mongoose.Types.ObjectId(videoId),
       },
     },
     {
       $lookup: {
-        from: "Users",
+        from: "users",
         localField: "commentedBy",
         foreignField: "_id",
         as: "commentor",
       },
     },
     {
+      $addFields: {
+        commentor: {
+          $first: "$commentor",
+        },
+      },
+    },
+
+    {
       $project: {
         content: 1,
-        "commentor.username": 1,
-        "commentor.avatar": 1,
-        "commentor.fullname": 1,
+        commentor: {
+          username: 1,
+          fullname: 1,
+          avatar: 1,
+        },
         createdAt: 1,
       },
     },
